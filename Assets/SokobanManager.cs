@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
+using System;
+using UnityEditor.Animations;
 
 [System.Serializable]
 public class LevelData
@@ -8,6 +10,7 @@ public class LevelData
     [TextArea(5, 15)]
     public string layout;
 }
+
 
 public class SokobanManager : MonoBehaviour
 {
@@ -25,7 +28,7 @@ public class SokobanManager : MonoBehaviour
     private GameObject playerObject;
     private Vector3Int playerPosition;
     private Dictionary<Vector3Int, GameObject> boxes = new Dictionary<Vector3Int, GameObject>();
-
+    private Animator playerAnimator;
     private int currentLevel = 0;
 
     void Start()
@@ -35,11 +38,7 @@ public class SokobanManager : MonoBehaviour
 
     void LoadLevel(int levelIndex)
     {
-        if (levelIndex < 0 || levelIndex >= levels.Length)
-        {
-            Debug.LogError("Invalid level index!");
-            return;
-        }
+
 
         ClearLevel();
 
@@ -83,6 +82,18 @@ public class SokobanManager : MonoBehaviour
         }
 
         playerObject = Instantiate(playerPrefab, GetWorldPosition(playerPosition), Quaternion.identity);
+
+        playerAnimator = playerObject.GetComponent<Animator>();
+        
+        if (playerAnimator == null)
+        {
+            Debug.LogError("Animator component not found on player prefab!");
+        }
+        if (levelIndex < 0 || levelIndex >= levels.Length)
+        {
+            Debug.LogError("Invalid level index!");
+            return;
+        }
     }
 
     void ClearLevel()
@@ -171,13 +182,29 @@ public class SokobanManager : MonoBehaviour
 
                     // Move the player
                     MovePlayer(newPosition);
+
+                    UpdatePlayerAnimation(direction);
+
                 }
             }
             else
             {
+        
                 // Move the player
                 MovePlayer(newPosition);
+                UpdatePlayerAnimation(direction);
             }
+        }
+    }
+
+    void UpdatePlayerAnimation(Vector3Int movement)
+    {
+        if (movement != Vector3Int.zero)
+        {
+            playerAnimator.SetTrigger("right");
+            // playerAnimator.SetTrigger("Move");
+            // playerAnimator.SetFloat("MoveX", movement.x);
+            // playerAnimator.SetFloat("MoveY", movement.y);
         }
     }
 
