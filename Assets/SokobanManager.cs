@@ -5,8 +5,8 @@ using System.Collections.Generic;
 [System.Serializable]
 public class LevelData
 {
-    public string[] layout;
-    public Vector2Int playerStart;
+    [TextArea(5, 15)]
+    public string layout;
 }
 
 public class SokobanManager : MonoBehaviour
@@ -44,15 +44,19 @@ public class SokobanManager : MonoBehaviour
         ClearLevel();
 
         LevelData level = levels[levelIndex];
-        int height = level.layout.Length;
-        int width = level.layout[0].Length;
+        string[] rows = level.layout.Split('\n');
+        int height = rows.Length;
+        int width = rows[0].Length;
 
         for (int y = 0; y < height; y++)
         {
+            string row = rows[y].Trim(); // Remove any leading/trailing whitespace
             for (int x = 0; x < width; x++)
             {
+                if (x >= row.Length) continue; // Skip if the row is shorter than expected
+
                 Vector3Int pos = new Vector3Int(x, height - 1 - y, 0);
-                char tile = level.layout[y][x];
+                char tile = row[x];
 
                 switch (tile)
                 {
@@ -62,6 +66,7 @@ public class SokobanManager : MonoBehaviour
                     case '.':
                     case '@':
                     case '$':
+                    case ' ':
                         floorTilemap.SetTile(pos, floorTile);
                         break;
                 }
