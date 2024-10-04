@@ -189,6 +189,8 @@ public class SokobanManager : MonoBehaviour
         }
 
         playerObject = Instantiate(playerPrefab, GetWorldPosition(playerPosition), Quaternion.identity);
+        playerSpriteRenderer = playerObject.GetComponent<SpriteRenderer>();
+
         playerAnimator = playerObject.GetComponent<Animator>();
         
         if (playerAnimator == null)
