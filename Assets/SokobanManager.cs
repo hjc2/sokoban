@@ -125,7 +125,7 @@ public class SokobanManager : MonoBehaviour
         }
         boxes.Clear();
         goalPositions.Clear();  // Clear goal positions
-        
+
 
         if (playerObject != null)
         {
@@ -212,14 +212,13 @@ public class SokobanManager : MonoBehaviour
                 Vector3Int pushPosition = newPosition + direction;
                 if (wallTilemap.GetTile(pushPosition) == null && !boxes.ContainsKey(pushPosition))
                 {
-                    CheckWinCondition();
-
                     // Move the box
-                    StartCoroutine(MoveObject(boxObject, pushPosition));
                     boxes.Remove(newPosition);
                     boxes[pushPosition] = boxObject;
+                    CheckWinCondition();
 
                     // Move the player
+                    StartCoroutine(MoveObject(boxObject, pushPosition));
                     StartCoroutine(MovePlayer(newPosition));
                 }
             }
