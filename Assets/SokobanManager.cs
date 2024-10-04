@@ -3,6 +3,7 @@ using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using System;
 using UnityEditor.Animations;
+using System.Linq;
 
 [System.Serializable]
 public class LevelData
@@ -14,6 +15,8 @@ public class LevelData
 
 public class SokobanManager : MonoBehaviour
 {
+    private SpriteRenderer playerSpriteRenderer;
+
     public Tilemap floorTilemap;
     public Tilemap wallTilemap;
     
@@ -30,16 +33,20 @@ public class SokobanManager : MonoBehaviour
     private Dictionary<Vector3Int, GameObject> boxes = new Dictionary<Vector3Int, GameObject>();
     private Animator playerAnimator;
     private int currentLevel = 0;
+    private float moveSpeed = 5f;  // Speed of movement
+
+    private bool isMoving = false;
+    private float moveTimer = 0f;
+    private float moveDelay = 0.1f;
 
     void Start()
     {
         LoadLevel(currentLevel);
+        playerSpriteRenderer = playerObject.GetComponent<SpriteRenderer>();
     }
 
     void LoadLevel(int levelIndex)
     {
-
-
         ClearLevel();
 
         LevelData level = levels[levelIndex];
@@ -134,23 +141,38 @@ public class SokobanManager : MonoBehaviour
     {
         Vector3Int movement = Vector3Int.zero;
 
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             movement = Vector3Int.up;
-        else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
             movement = Vector3Int.down;
-        else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
             movement = Vector3Int.left;
-        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            FlipSprite(true);
+        }
+        else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
             movement = Vector3Int.right;
-        else if (Input.GetKeyDown(KeyCode.R))
+            FlipSprite(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
             LoadLevel(currentLevel); // Reload current level
         else if (Input.GetKeyDown(KeyCode.N))
             LoadNextLevel();
 
         if (movement != Vector3Int.zero)
         {
-            TryMove(movement);
+            moveTimer += Time.deltaTime;
+            if (moveTimer >= moveDelay)
+            {
+                TryMove(movement);
+                moveTimer = 0f;
+            }
         }
+        else
+        {
+            moveTimer = moveDelay; // Reset timer when no key is pressed
+        }
+
     }
 
     void LoadNextLevel()
@@ -158,7 +180,7 @@ public class SokobanManager : MonoBehaviour
         currentLevel++;
         if (currentLevel >= levels.Length)
         {
-            Debug.Log("All levels completed!");
+            // Debug.Log("All levels completed!");
             currentLevel = 0;
         }
         LoadLevel(currentLevel);
@@ -166,6 +188,8 @@ public class SokobanManager : MonoBehaviour
 
     void TryMove(Vector3Int direction)
     {
+        if (isMoving) return;
+
         Vector3Int newPosition = playerPosition + direction;
 
         if (wallTilemap.GetTile(newPosition) == null) // Not a wall
@@ -176,41 +200,95 @@ public class SokobanManager : MonoBehaviour
                 if (wallTilemap.GetTile(pushPosition) == null && !boxes.ContainsKey(pushPosition))
                 {
                     // Move the box
+                    StartCoroutine(MoveObject(boxObject, pushPosition));
                     boxes.Remove(newPosition);
                     boxes[pushPosition] = boxObject;
-                    boxObject.transform.position = GetWorldPosition(pushPosition);
 
                     // Move the player
-                    MovePlayer(newPosition);
-
-                    UpdatePlayerAnimation(direction);
-
+                    StartCoroutine(MovePlayer(newPosition));
                 }
             }
             else
             {
-        
                 // Move the player
-                MovePlayer(newPosition);
-                UpdatePlayerAnimation(direction);
+                StartCoroutine(MovePlayer(newPosition));
             }
+        }
+    }
+
+    IEnumerator<Coroutine> MovePlayer(Vector3Int newPosition)
+    {
+        isMoving = true;
+        Vector3 startPosition = playerObject.transform.position;
+        Vector3 endPosition = GetWorldPosition(newPosition);
+        float journeyLength = Vector3.Distance(startPosition, endPosition);
+        float startTime = Time.time;
+
+        UpdatePlayerAnimation(newPosition - playerPosition);
+
+        while (playerObject.transform.position != endPosition)
+        {
+            float distanceCovered = (Time.time - startTime) * moveSpeed;
+            float fractionOfJourney = distanceCovered / journeyLength;
+            playerObject.transform.position = Vector3.Lerp(startPosition, endPosition, fractionOfJourney);
+            yield return null;
+        }
+        // Debug.Log("Player moved to ");
+        playerPosition = newPosition;
+        isMoving = false;
+        UpdatePlayerAnimation(Vector3Int.zero);
+    }
+
+    IEnumerator<Coroutine> MoveObject(GameObject obj, Vector3Int newPosition)
+    {
+        Vector3 startPosition = obj.transform.position;
+        Vector3 endPosition = GetWorldPosition(newPosition);
+        float journeyLength = Vector3.Distance(startPosition, endPosition);
+        float startTime = Time.time;
+
+        while (obj.transform.position != endPosition)
+        {
+            float distanceCovered = (Time.time - startTime) * moveSpeed;
+            float fractionOfJourney = distanceCovered / journeyLength;
+            obj.transform.position = Vector3.Lerp(startPosition, endPosition, fractionOfJourney);
+            yield return null;
+        }
+    }
+
+    void FlipSprite(bool flipLeft)
+    {
+        if (playerSpriteRenderer != null)
+        {
+            playerSpriteRenderer.flipX = flipLeft;
         }
     }
 
     void UpdatePlayerAnimation(Vector3Int movement)
     {
-        if (movement != Vector3Int.zero)
+        if (playerAnimator != null && playerAnimator.runtimeAnimatorController != null)
         {
-            playerAnimator.SetTrigger("right");
-            // playerAnimator.SetTrigger("Move");
-            // playerAnimator.SetFloat("MoveX", movement.x);
-            // playerAnimator.SetFloat("MoveY", movement.y);
-        }
-    }
+            if (movement != Vector3Int.zero)
+            {
+                playerAnimator.SetBool("IsMoving", true);
+                playerAnimator.SetFloat("Horizontal", movement.x);
+                playerAnimator.SetFloat("Vertical", movement.y);
 
-    void MovePlayer(Vector3Int newPosition)
-    {
-        playerPosition = newPosition;
-        playerObject.transform.position = GetWorldPosition(playerPosition);
+                if(movement.x < 0)
+                {
+                    FlipSprite(true);
+                    Debug.Log("Flip Left");
+                }
+                else
+                {
+                    FlipSprite(false);
+                }
+            }
+            else
+            {
+                playerAnimator.SetBool("IsMoving", false);
+                playerAnimator.SetFloat("Horizontal", 0);
+                playerAnimator.SetFloat("Vertical", 0);
+            }
+        }
     }
 }
