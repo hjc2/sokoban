@@ -1,10 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
-using System.Collections;
 using UnityEngine.UI;
-using System;
-using UnityEditor.Animations;
 using System.Linq;
 
 [System.Serializable]
