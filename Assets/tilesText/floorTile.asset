@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
   m_Name: floorTile
   m_EditorClassIdentifier: 
-  m_DefaultSprite: {fileID: 7482667652216324306, guid: b9750ea5a24b80b4483d0e9f6957b83b, type: 3}
+  m_DefaultSprite: {fileID: 1854036840, guid: 792c93aad1a2b274c968f6a6aa786ff3, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
   m_TilingRules: []

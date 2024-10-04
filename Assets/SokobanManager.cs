@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
+using System.Collections;
+using UnityEngine.UI;
 using System;
 using UnityEditor.Animations;
 using System.Linq;
@@ -43,11 +45,97 @@ public class SokobanManager : MonoBehaviour
     private float moveTimer = 0f;
     private float moveDelay = 0.1f;
 
+
+    public Canvas titleScreenCanvas;
+    public Button playButton;
+    public Text titleText;
+
+    public Canvas endScreenCanvas;
+    public Text endScreenText;
+    public Button restartButton;
+
+    private enum GameState
+    {
+        TitleScreen,
+        Playing,
+        EndScreen
+    }    
+    private GameState currentState = GameState.TitleScreen;
     void Start()
     {
+        SetupTitleScreen();
+        SetupEndScreen();
+    }
+
+    void SetupTitleScreen()
+    {
+        if (titleText != null)
+        {
+            titleText.text = "Sokoban";
+        }
+
+        if (playButton != null)
+        {
+            playButton.onClick.AddListener(StartGame);
+        }
+
+        ShowTitleScreen(true);
+    }
+
+    void SetupEndScreen()
+    {
+        if (endScreenText != null)
+        {
+            endScreenText.text = "Congratulations!\nYou completed all levels!";
+        }
+
+        if (restartButton != null)
+        {
+            restartButton.onClick.AddListener(RestartGame);
+        }
+
+        ShowEndScreen(false);
+    }
+
+        void StartGame()
+    {
+        currentState = GameState.Playing;
+        ShowTitleScreen(false);
+        ShowEndScreen(false);
+        currentLevel = 0;
         LoadLevel(currentLevel);
         playerSpriteRenderer = playerObject.GetComponent<SpriteRenderer>();
     }
+
+    void RestartGame()
+    {
+        StartGame();
+    }
+
+    void ShowTitleScreen(bool show)
+    {
+        if (titleScreenCanvas != null)
+        {
+            titleScreenCanvas.gameObject.SetActive(show);
+        }
+    }
+
+    void ShowEndScreen(bool show)
+    {
+        if (endScreenCanvas != null)
+        {
+            endScreenCanvas.gameObject.SetActive(show);
+        }
+    }
+
+    void Update()
+    {
+        if (currentState == GameState.Playing)
+        {
+            HandleInput();
+        }
+    }
+
 
     void LoadLevel(int levelIndex)
     {
@@ -60,7 +148,8 @@ public class SokobanManager : MonoBehaviour
 
         for (int y = 0; y < height; y++)
         {
-            string row = rows[y].Trim();
+            // string row = rows[y].Trim();
+            string row = rows[y];
             for (int x = 0; x < width; x++)
             {
                 if (x >= row.Length) continue;
@@ -100,6 +189,8 @@ public class SokobanManager : MonoBehaviour
                         floorTilemap.SetTile(pos, floorTile);
                         floorTilemap.SetTile(pos, goalTile);  // Set goal tile
                         goalPositions.Add(pos);  // Add to goal positions
+                        break;
+                    case ' ':  // Empty space
                         break;
                 }
             }
@@ -145,10 +236,6 @@ public class SokobanManager : MonoBehaviour
         boxes[position] = boxObject;
     }
 
-    void Update()
-    {
-        HandleInput();
-    }
 
     void HandleInput()
     {
@@ -193,10 +280,11 @@ public class SokobanManager : MonoBehaviour
         currentLevel++;
         if (currentLevel >= levels.Length)
         {
-            // Debug.Log("All levels completed!");
+            ShowEndScreen(true);
             currentLevel = 0;
+        } else {
+            LoadLevel(currentLevel);
         }
-        LoadLevel(currentLevel);
     }
 
     void TryMove(Vector3Int direction)
