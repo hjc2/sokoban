@@ -89,8 +89,6 @@ public class SokobanManager : MonoBehaviour
         void StartGame()
     {
         currentState = GameState.Playing;
-        Debug.Log("Start Game");
-        Debug.Log(currentState);
         ShowTitleScreen(false);
         ShowEndScreen(false);
         currentLevel = 0;
@@ -127,8 +125,6 @@ public class SokobanManager : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("Current State: " + currentState);
-
         if (currentState == GameState.Playing)
         {
             HandleInput();
@@ -337,7 +333,6 @@ public class SokobanManager : MonoBehaviour
             playerObject.transform.position = Vector3.Lerp(startPosition, endPosition, fractionOfJourney);
             yield return null;
         }
-        // Debug.Log("Player moved to ");
         playerPosition = newPosition;
         isMoving = false;
         UpdatePlayerAnimation(Vector3Int.zero);
@@ -380,7 +375,6 @@ public class SokobanManager : MonoBehaviour
                 if(movement.x < 0)
                 {
                     FlipSprite(true);
-                    // Debug.Log("Flip Left");
                 }
                 else if (movement.x > 0)
                 {
@@ -404,9 +398,7 @@ public class SokobanManager : MonoBehaviour
         {
             if(currentLevel >= levels.Length - 1)
             {
-                Debug.Log("You win!");
                 ClearLevel();
-                Debug.Log("CLEARED!");
                 ShowEndScreen(true);
                 currentLevel = 0;
                 return true;
