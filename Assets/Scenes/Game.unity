@@ -1187,7 +1187,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1699672300}
   - {fileID: 463151846}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1630,11 +1629,11 @@ Transform:
   m_GameObject: {fileID: 1699672299}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -426.5, y: -256, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1386223209}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1699672301
 MonoBehaviour:
@@ -1668,9 +1667,38 @@ MonoBehaviour:
 
       ######
 
+
 '
-  - layout: "  ######\n  #..@.#\n  #..$.#\n  #..~.#\n  ######"
-  - layout: "  ######\n  #..@.#\n  #..$.#\n  #..~.#\n  ######"
+  - layout: '########
+
+      ##..####
+
+      ##$.#..##
+
+      #.
+
+      ##
+
+      #.
+
+      #.
+
+      ##
+
+      ########'
+  - layout: '~~.~
+
+      ##..
+
+      .$$.
+
+      @.$.
+
+      .$$.
+
+      .~#.
+
+      ~...'
   titleScreenCanvas: {fileID: 1996966687}
   playButton: {fileID: 1544045285}
   endScreenCanvas: {fileID: 1160875596}
@@ -2039,5 +2067,6 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 1160875599}
   - {fileID: 1996966690}
+  - {fileID: 1699672300}
   - {fileID: 1386223209}
   - {fileID: 1316685969}
