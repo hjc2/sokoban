@@ -273,7 +273,7 @@ public class SokobanManager : MonoBehaviour
 
     void LoadNextLevel()
     {
-        if (currentLevel >= levels.Length)
+        if (currentLevel > levels.Length)
         {
             ClearLevel();
             ShowEndScreen(true);
