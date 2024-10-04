@@ -48,10 +48,7 @@ public class SokobanManager : MonoBehaviour
 
     public Canvas titleScreenCanvas;
     public Button playButton;
-    public Text titleText;
-
     public Canvas endScreenCanvas;
-    public Text endScreenText;
     public Button restartButton;
 
     private enum GameState
@@ -69,10 +66,6 @@ public class SokobanManager : MonoBehaviour
 
     void SetupTitleScreen()
     {
-        if (titleText != null)
-        {
-            titleText.text = "Sokoban";
-        }
 
         if (playButton != null)
         {
@@ -84,10 +77,6 @@ public class SokobanManager : MonoBehaviour
 
     void SetupEndScreen()
     {
-        if (endScreenText != null)
-        {
-            endScreenText.text = "Congratulations!\nYou completed all levels!";
-        }
 
         if (restartButton != null)
         {
@@ -100,6 +89,8 @@ public class SokobanManager : MonoBehaviour
         void StartGame()
     {
         currentState = GameState.Playing;
+        Debug.Log("Start Game");
+        Debug.Log(currentState);
         ShowTitleScreen(false);
         ShowEndScreen(false);
         currentLevel = 0;
@@ -114,6 +105,9 @@ public class SokobanManager : MonoBehaviour
 
     void ShowTitleScreen(bool show)
     {
+        if(show){
+            currentState = GameState.EndScreen;
+        }
         if (titleScreenCanvas != null)
         {
             titleScreenCanvas.gameObject.SetActive(show);
@@ -121,7 +115,10 @@ public class SokobanManager : MonoBehaviour
     }
 
     void ShowEndScreen(bool show)
-    {
+    {   
+        if(show){
+            currentState = GameState.EndScreen;
+        }
         if (endScreenCanvas != null)
         {
             endScreenCanvas.gameObject.SetActive(show);
@@ -130,6 +127,8 @@ public class SokobanManager : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("Current State: " + currentState);
+
         if (currentState == GameState.Playing)
         {
             HandleInput();
@@ -272,17 +271,17 @@ public class SokobanManager : MonoBehaviour
         {
             moveTimer = moveDelay; // Reset timer when no key is pressed
         }
-
     }
 
     void LoadNextLevel()
     {
-        currentLevel++;
         if (currentLevel >= levels.Length)
         {
+            ClearLevel();
             ShowEndScreen(true);
             currentLevel = 0;
         } else {
+            currentLevel++;
             LoadLevel(currentLevel);
         }
     }
@@ -403,9 +402,15 @@ public class SokobanManager : MonoBehaviour
         
         if (allBoxesOnGoals)
         {
-            Debug.Log("Level Complete!");
-            // You can add more code here to handle level completion,
-            // such as showing a victory screen or loading the next level
+            if(currentLevel >= levels.Length - 1)
+            {
+                Debug.Log("You win!");
+                ClearLevel();
+                Debug.Log("CLEARED!");
+                ShowEndScreen(true);
+                currentLevel = 0;
+                return true;
+            }
             LoadNextLevel();
             return true;
         }
