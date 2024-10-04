@@ -225,8 +225,6 @@ public class SokobanManager : MonoBehaviour
             else
             {
                 if(!CheckWinCondition()){
-            
-                  // Move the player
                   StartCoroutine(MovePlayer(newPosition));
                 }
             }
