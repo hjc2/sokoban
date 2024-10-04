@@ -22,6 +22,9 @@ public class SokobanManager : MonoBehaviour
     
     public TileBase floorTile;
     public TileBase wallTile;
+    public TileBase goalTile;  // New variable for goal tile
+
+    private HashSet<Vector3Int> goalPositions = new HashSet<Vector3Int>();  // To store goal positions
 
     public GameObject playerPrefab;
     public GameObject boxPrefab;
@@ -31,6 +34,7 @@ public class SokobanManager : MonoBehaviour
     private GameObject playerObject;
     private Vector3Int playerPosition;
     private Dictionary<Vector3Int, GameObject> boxes = new Dictionary<Vector3Int, GameObject>();
+
     private Animator playerAnimator;
     private int currentLevel = 0;
     private float moveSpeed = 5f;  // Speed of movement
@@ -56,10 +60,10 @@ public class SokobanManager : MonoBehaviour
 
         for (int y = 0; y < height; y++)
         {
-            string row = rows[y].Trim(); // Remove any leading/trailing whitespace
+            string row = rows[y].Trim();
             for (int x = 0; x < width; x++)
             {
-                if (x >= row.Length) continue; // Skip if the row is shorter than expected
+                if (x >= row.Length) continue;
 
                 Vector3Int pos = new Vector3Int(x, height - 1 - y, 0);
                 char tile = row[x];
@@ -69,37 +73,44 @@ public class SokobanManager : MonoBehaviour
                     case '#':
                         wallTilemap.SetTile(pos, wallTile);
                         break;
-                    case '.':
-                    case '@':
-                    case '$':
-                    case ' ':
+                    case '.': // normal tile
                         floorTilemap.SetTile(pos, floorTile);
                         break;
-                }
-
-                if (tile == '@')
-                {
-                    playerPosition = pos;
-                }
-                else if (tile == '$')
-                {
-                    PlaceBox(pos);
+                    case '@':
+                    case '+':  // Player on goal
+                        floorTilemap.SetTile(pos, floorTile);
+                        if (tile == '+')
+                        {
+                            floorTilemap.SetTile(pos, goalTile);
+                            goalPositions.Add(pos);
+                        }
+                        playerPosition = pos;
+                        break;
+                    case '$':
+                    case '*':  // Box on goal
+                        floorTilemap.SetTile(pos, floorTile);
+                        if (tile == '*')
+                        {
+                            floorTilemap.SetTile(pos, goalTile);
+                            goalPositions.Add(pos);
+                        }
+                        PlaceBox(pos);
+                        break;
+                    case '~':  // Goal tile
+                        floorTilemap.SetTile(pos, floorTile);
+                        floorTilemap.SetTile(pos, goalTile);  // Set goal tile
+                        goalPositions.Add(pos);  // Add to goal positions
+                        break;
                 }
             }
         }
 
         playerObject = Instantiate(playerPrefab, GetWorldPosition(playerPosition), Quaternion.identity);
-
         playerAnimator = playerObject.GetComponent<Animator>();
         
         if (playerAnimator == null)
         {
             Debug.LogError("Animator component not found on player prefab!");
-        }
-        if (levelIndex < 0 || levelIndex >= levels.Length)
-        {
-            Debug.LogError("Invalid level index!");
-            return;
         }
     }
 
@@ -113,6 +124,8 @@ public class SokobanManager : MonoBehaviour
             Destroy(box);
         }
         boxes.Clear();
+        goalPositions.Clear();  // Clear goal positions
+        
 
         if (playerObject != null)
         {
@@ -199,6 +212,8 @@ public class SokobanManager : MonoBehaviour
                 Vector3Int pushPosition = newPosition + direction;
                 if (wallTilemap.GetTile(pushPosition) == null && !boxes.ContainsKey(pushPosition))
                 {
+                    CheckWinCondition();
+
                     // Move the box
                     StartCoroutine(MoveObject(boxObject, pushPosition));
                     boxes.Remove(newPosition);
@@ -210,10 +225,14 @@ public class SokobanManager : MonoBehaviour
             }
             else
             {
+                CheckWinCondition();
+                
                 // Move the player
                 StartCoroutine(MovePlayer(newPosition));
             }
         }
+
+
     }
 
     IEnumerator<Coroutine> MovePlayer(Vector3Int newPosition)
@@ -291,4 +310,18 @@ public class SokobanManager : MonoBehaviour
             }
         }
     }
+
+    void CheckWinCondition()
+    {
+        bool allBoxesOnGoals = boxes.Keys.All(boxPos => goalPositions.Contains(boxPos));
+        
+        if (allBoxesOnGoals)
+        {
+            Debug.Log("Level Complete!");
+            // You can add more code here to handle level completion,
+            // such as showing a victory screen or loading the next level
+            LoadNextLevel();
+        }
+    }
+
 }

@@ -428,27 +428,28 @@ MonoBehaviour:
   wallTilemap: {fileID: 191679329}
   floorTile: {fileID: 11400000, guid: ce690288384f3a8439c29b190d98768d, type: 2}
   wallTile: {fileID: 11400000, guid: ede56ba049355814ea05a6e77defc7bb, type: 2}
+  goalTile: {fileID: 11400000, guid: 29c1483d310e21f4d90c55a7326487d1, type: 2}
   playerPrefab: {fileID: 7426911910947966136, guid: e8877af7857c6094a891e6eef3b0b754, type: 3}
   boxPrefab: {fileID: 6038300127302477887, guid: 3ef9b130a0b9210459a65248c03b7c33, type: 3}
   levels:
-  - layout: '#########
+  - layout: '######
 
-      #  .##  #
+      #..@.#
 
-      # #.$ @ #
+      #..$.#
 
-      #..# $# #
+      #..~.#
 
-      ##.#
-      $  #
+      ######'
+  - layout: '########
 
-      # .$$#$ #
+      #....@.#
 
-      # #. $  #
+      #....$.#
 
-      #   ##  #
+      #....~.#
 
-      #########'
+      ########'
 --- !u!1 &1962405047
 GameObject:
   m_ObjectHideFlags: 0
