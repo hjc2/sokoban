@@ -215,19 +215,20 @@ public class SokobanManager : MonoBehaviour
                     // Move the box
                     boxes.Remove(newPosition);
                     boxes[pushPosition] = boxObject;
-                    CheckWinCondition();
-
-                    // Move the player
-                    StartCoroutine(MoveObject(boxObject, pushPosition));
-                    StartCoroutine(MovePlayer(newPosition));
+                    if(!CheckWinCondition()){
+                        // Move the player
+                        StartCoroutine(MoveObject(boxObject, pushPosition));
+                        StartCoroutine(MovePlayer(newPosition));
+                    }
                 }
             }
             else
             {
-                CheckWinCondition();
-                
-                // Move the player
-                StartCoroutine(MovePlayer(newPosition));
+                if(!CheckWinCondition()){
+            
+                  // Move the player
+                  StartCoroutine(MovePlayer(newPosition));
+                }
             }
         }
 
@@ -310,7 +311,7 @@ public class SokobanManager : MonoBehaviour
         }
     }
 
-    void CheckWinCondition()
+    bool CheckWinCondition()
     {
         bool allBoxesOnGoals = boxes.Keys.All(boxPos => goalPositions.Contains(boxPos));
         
@@ -320,7 +321,9 @@ public class SokobanManager : MonoBehaviour
             // You can add more code here to handle level completion,
             // such as showing a victory screen or loading the next level
             LoadNextLevel();
+            return true;
         }
+        return false;
     }
 
 }
