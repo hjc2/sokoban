@@ -234,7 +234,8 @@ public class SokobanManager : MonoBehaviour
     void HandleInput()
     {
         Vector3Int movement = Vector3Int.zero;
-
+        Debug.Log(playerPosition);  // Log player position
+        
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             movement = Vector3Int.up;
         else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
