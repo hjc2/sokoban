@@ -276,9 +276,9 @@ public class SokobanManager : MonoBehaviour
                 if(movement.x < 0)
                 {
                     FlipSprite(true);
-                    Debug.Log("Flip Left");
+                    // Debug.Log("Flip Left");
                 }
-                else
+                else if (movement.x > 0)
                 {
                     FlipSprite(false);
                 }
