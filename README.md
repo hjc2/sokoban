@@ -28,3 +28,12 @@ https://kenney.nl/assets/pattern-pack
 
 Level design inspiration from David W Skinner
 
+## to do
+
+remove skip
+
+remove extra level
+
+make sure levels fit in deployed screen
+
+bug test and deploy

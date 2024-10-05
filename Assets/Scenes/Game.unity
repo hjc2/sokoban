@@ -1240,7 +1240,7 @@ GameObject:
   - component: {fileID: 1365710466}
   - component: {fileID: 1365710465}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: win text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1885,7 +1885,7 @@ GameObject:
   - component: {fileID: 1687811302}
   - component: {fileID: 1687811301}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: final time text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2118,7 +2118,7 @@ MonoBehaviour:
 
       #....#
 
-      ###$.#
+      ###.$#
 
       #...~#
 
@@ -2131,7 +2131,7 @@ MonoBehaviour:
   endScreenCanvas: {fileID: 1160875596}
   restartButton: {fileID: 689295256}
   timerText: {fileID: 1160067940}
-  finalTimeText: {fileID: 0}
+  finalTimeText: {fileID: 1687811301}
 --- !u!1 &1962405047
 GameObject:
   m_ObjectHideFlags: 0
