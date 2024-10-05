@@ -34,6 +34,4 @@ remove skip
 
 remove extra level
 
-make sure levels fit in deployed screen
-
 bug test and deploy

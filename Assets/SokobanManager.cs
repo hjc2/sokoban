@@ -281,8 +281,8 @@ void StartGame() {
 
         if (Input.GetKeyDown(KeyCode.R))
             LoadLevel(currentLevel); // Reload current level
-        else if (Input.GetKeyDown(KeyCode.N))
-            LoadNextLevel();
+        // else if (Input.GetKeyDown(KeyCode.N))
+        //     LoadNextLevel();
 
         if (movement != Vector3Int.zero)
         {
