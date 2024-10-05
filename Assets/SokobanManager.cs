@@ -3,6 +3,7 @@ using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
+using TMPro; // Add this line to import TextMeshPro
 
 [System.Serializable]
 public class LevelData
@@ -47,6 +48,10 @@ public class SokobanManager : MonoBehaviour
     public Button playButton;
     public Canvas endScreenCanvas;
     public Button restartButton;
+    private float currentTime = 0f;
+    private bool timerRunning = false;
+    public TextMeshProUGUI  timerText;
+    public TextMeshProUGUI  finalTimeText;
 
     private enum GameState
     {
@@ -61,6 +66,7 @@ public class SokobanManager : MonoBehaviour
 
         SetupEndScreen();
         SetupTitleScreen();
+        UpdateTimerDisplay();
     }
 
     void SetupTitleScreen()
@@ -84,15 +90,19 @@ public class SokobanManager : MonoBehaviour
 
         ShowEndScreen(false);
     }
-
-        void StartGame()
-    {
+void StartGame() {
         currentState = GameState.Playing;
         ShowTitleScreen(false);
         ShowEndScreen(false);
         currentLevel = 0;
         LoadLevel(currentLevel);
         playerSpriteRenderer = playerObject.GetComponent<SpriteRenderer>();
+
+        // Reset and start the timer
+        currentTime = 0f;
+        timerRunning = true;
+        finalTimeText.gameObject.SetActive(false);
+        timerText.gameObject.SetActive(true);
     }
 
     void RestartGame()
@@ -127,7 +137,25 @@ public class SokobanManager : MonoBehaviour
         if (currentState == GameState.Playing)
         {
             HandleInput();
+            UpdateTimer();
         }
+    }
+
+    void UpdateTimer()
+    {
+        if (timerRunning)
+        {
+            currentTime += Time.deltaTime;
+            UpdateTimerDisplay();
+        }
+    }
+
+    void UpdateTimerDisplay()
+    {
+        System.TimeSpan time = System.TimeSpan.FromSeconds(currentTime);
+        Debug.Log(time);
+        Debug.Log(string.Format("{0:00}:{1:00}", time.Minutes, time.Seconds));
+        timerText.text = string.Format("{0:00}:{1:00}", time.Minutes, time.Seconds);
     }
 
 
@@ -403,6 +431,7 @@ public class SokobanManager : MonoBehaviour
                 ClearLevel();
                 ShowEndScreen(true);
                 currentLevel = 0;
+                DisplayFinalTime();
                 return true;
             }
             LoadNextLevel();
@@ -410,5 +439,12 @@ public class SokobanManager : MonoBehaviour
         }
         return false;
     }
-
+    void DisplayFinalTime()
+        {
+            System.TimeSpan time = System.TimeSpan.FromSeconds(currentTime);
+            finalTimeText.text = string.Format("Final Time: {0:00}:{1:00}", time.Minutes, time.Seconds);
+            timerText.gameObject.SetActive(false);
+            finalTimeText.gameObject.SetActive(true);
+            timerRunning = false;
+        }
 }
