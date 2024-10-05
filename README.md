@@ -30,8 +30,4 @@ Level design inspiration from David W Skinner
 
 ## to do
 
-remove skip
-
-remove extra level
-
 bug test and deploy
