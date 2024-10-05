@@ -2112,20 +2112,6 @@ MonoBehaviour:
       #~...#
 
       ######'
-  - layout: '######
-
-      #..@.#
-
-      #....#
-
-      ###.$#
-
-      #...~#
-
-      ######
-
-
-'
   titleScreenCanvas: {fileID: 1996966687}
   playButton: {fileID: 1544045285}
   endScreenCanvas: {fileID: 1160875596}
