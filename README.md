@@ -18,9 +18,9 @@ https://hjc2.github.io/sokoban/
 
 ### Additional
 
-Timer for user to play the game back faster and optomize
+Timer for user to play the game back faster and optimize
 
-2 additonal levels
+2 additional levels
 
 ## Acknowledgements
 
